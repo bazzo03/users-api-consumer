@@ -1,12 +1,15 @@
 package co.s4n.infrastructure.kafka
 
+import java.util
 import java.util.concurrent._
 import java.util.{ Collections, Properties }
 
 import com.typesafe.scalalogging.LazyLogging
-import org.apache.kafka.clients.consumer.{ ConsumerConfig, KafkaConsumer }
+import org.apache.kafka.clients.consumer.{ ConsumerConfig, ConsumerRecord, ConsumerRecords, KafkaConsumer }
 
 import scala.collection.JavaConverters._
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object Consumer extends LazyLogging {
 
@@ -26,17 +29,18 @@ object Consumer extends LazyLogging {
     val consumer = new KafkaConsumer[String, String](createConsumerConfig())
     consumer.subscribe(Collections.singletonList("UsersTopic"))
 
-    Executors.newSingleThreadExecutor.execute(() => {
-      while (true) {
-        val records = consumer.poll(1000)
+    Executors.newSingleThreadExecutor.execute(new Runnable {
+      override def run(): Unit = {
+        while (true) {
+          val records = consumer.poll(1000)
 
-        for (record <- records.iterator().asScala) {
-          logger.info("///// **** Message Received **** /////")
-          logger.info("(" + record.key() + ", " + record.value() + ") at offset " + record.offset())
-          logger.info(" ****  **** ")
+          for (record <- records.iterator().asScala) {
+            logger.info("///// **** Message Received **** /////")
+            logger.info("(" + record.key() + ", " + record.value() + ") at offset " + record.offset())
+            logger.info(" ****  **** ")
+          }
         }
       }
     })
   }
-
 }
