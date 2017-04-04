@@ -5,6 +5,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{ ContentTypes, HttpEntity }
 import akka.stream.ActorMaterializer
 import co.s4n.infrastructure.kafka.Consumer
+import co.s4n.infrastructure.reactive_kafka.ReactiveConsumer
 
 import scala.io.StdIn
 
@@ -17,8 +18,8 @@ object Main {
     implicit val executionContext = system.dispatcher
 
     // Define route
-    Consumer.run()
-
+    //    Consumer.run()
+    ReactiveConsumer.blabla()
   }
 
 }
